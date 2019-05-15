@@ -10,4 +10,4 @@ Team Members:
 - Annisa Utami
 - Lorenzo Vitali
 
-The Python code used for the *Neural Transfer* was taken from the [book](https://www.manning.com/books/deep-learning-with-python) and GitHub [repository](https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/8.3-neural-style-transfer.ipynb) of [François Chollet](https://github.com/fchollet).
+The Python code used for the *Neural Style Transfer* component was taken from the [book](https://www.manning.com/books/deep-learning-with-python) and GitHub [repository](https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/8.3-neural-style-transfer.ipynb) of [François Chollet](https://github.com/fchollet).
