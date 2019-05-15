@@ -1,6 +1,6 @@
 # Codinsky Reply
 
-This repository contans the code for the ** Generative Art Hackathon** organized by [Reply](https://www.reply.com/en/). 
+This repository contans the code for the **Generative Art Hackathon** organized by [Reply](https://www.reply.com/en/). 
 
 Team Members: 
 
