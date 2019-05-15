@@ -20,4 +20,4 @@ colors = (0, 20, 200)
 radius = 50
 center = (200, 200)
 thickness = -1
-draw_circle(sizes, center, radius, colors)
+draw_circle(sizes, center, radius, colors, thickness)
