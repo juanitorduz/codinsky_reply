@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<STYLE>
+div,input {
+  font-family: Futura,Trebuchet MS,Arial,sans-serif; 
+  font-size:14pt
+}
+
+form input[type=submit] {
+	background : url("/static/submit.png") no-repeat center center;
+	width : 90px;
+	height :90px;
+	border : none;
+	color : transparent;
+}
+
+  table {
+    margin: 0 auto; /* or margin: 0 auto 0 auto */
+  }
+</STYLE>
+<title>Codinsky virtual museum</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <form method="POST" action="/thank-you">
+		<center>  <!--  /static/uploads/3b0581d9-0575-4a7a-b8b1-589dad9f33ae/91880.jpg  -->
+		<img src="/static/kand.jpg"  style="width:100%">
+		</center>
+		<table width="80%" style="position:relative;top:-250px;left:-20px">
+		<tr>
+		<td colspan="2">
+			<div>Hello! I am codinsky , Who are you? </div>
+		</td>
+		</tr>
+		<tr>
+		<td  colspan="2">
+			<div style="margin-top:5px">
+			<input type="text" name="firstname" size="50"></input>
+			</div>
+		</td>
+		</tr>
+		<tr>
+		<td  colspan="2">
+			<div style="margin-top:20px">Please to meet you… : Can you please tell me now how do you feel? </div>
+		</td>	
+		</tr>
+		<tr>
+		<td>
+		<textarea rows="4" cols="120" name="textarea"></textarea>	
+		</td>
+		<td><input type="submit">
+		</td>
+		</tr>
+		</table>
+
+
+
+    </form>
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/uploadr.js') }}"></script>
+</body>
+</html>
