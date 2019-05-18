@@ -35,7 +35,7 @@ def process():
     # This is the path to the style image.
     style_reference_image_path = 'images/kandisky_1.jpg'
     width, height = load_img(target_image_path).size
-    img_height = 400
+    img_height = 200
     img_width = int(width * img_height / height)	
     first_name = request.form['firstname']
     phrase = request.form['textarea']
@@ -160,8 +160,10 @@ def process():
     # Generate image
     plt.imshow(img)
     #plt.show()	
-	
-    return render_template('process.html', name=first_name,phrase=phrase, result=output_dict)
+    img_height2=img_height +20;
+    img_width2=img_width +30;
+    return render_template('process.html', name=first_name,phrase=phrase, result=output_dict, imgKand_width=img_width,imgKand_ht=img_height,
+	imgKand_width2=img_width2,imgKand_ht2=img_height2)
     
     
     
@@ -224,7 +226,7 @@ def parse_file_to_dict(file_path):
     mapping_df['Keywords'] = mapping_df['Keywords'].apply(lambda x: [keyword.strip() for keyword in x])
 
     mapping_df['Color'] = mapping_df['Color'].apply(lambda x: x.split(','))
-    mapping_df['Color'] = mapping_df['Color'].apply(lambda x: [color.strip() for color in x])
+    mapping_df['Color'] = mapping_df['Color'].apply(lambda x: [int(color.strip()) for color in x])
 
     mapping_df['Category'] = mapping_df['Category'].str.strip()
     mapping_df['Style'] = mapping_df['Style'].str.strip()
@@ -315,7 +317,7 @@ for i in range(iterations):
     # Save current generated image
     img = x.copy().reshape((img_height, img_width, 3))
     img = deprocess_image(img)
-    fname = result_prefix + '_at_iteration_%d.png' % i
+    fname = "static/"+result_prefix + '_at_iteration_%d.png' % i
     imsave(fname, img)
     end_time = time.time()
     print('Image saved as', fname)
