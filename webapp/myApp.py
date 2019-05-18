@@ -11,8 +11,8 @@ from scipy.misc import imsave
 import time
 from matplotlib import pyplot as plt
 
+import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-
 
 img_width = 200
 img_height = 400
@@ -36,79 +36,11 @@ def process():
     img_width = int(width * img_height / height)    
     first_name = request.form['firstname']
     phrase = request.form['textarea']
-    target_image = K.constant(preprocess_image(target_image_path))
-    style_reference_image = K.constant(preprocess_image(style_reference_image_path))
-
-    # This placeholder will contain our generated image
-    combination_image = K.placeholder((1, img_height, img_width, 3))
-
-    # We combine the 3 images into a single batch
-    input_tensor = K.concatenate([target_image,
-                              style_reference_image,
-                              combination_image], axis=0)
-
-    # We build the VGG19 network with our batch of 3 images as input.
-    # The model will be loaded with pre-trained ImageNet weights.
-    model = vgg19.VGG19(input_tensor=input_tensor,weights='imagenet', include_top=False)
+    
     print('Model loaded.')	
-    print(sentiment_analyzer.polarity_scores(phrase))	
-	
-	
-	
-
-    # Dict mapping layer names to activation tensors
-    outputs_dict = dict([(layer.name, layer.output) for layer in model.layers])
-    # Name of layer used for content loss 
-    content_layer = 'block5_conv2'
-    # Name of layers used for style loss
-    style_layers = ['block1_conv1',
-                'block2_conv1',
-                'block3_conv1',
-                'block4_conv1',
-                'block5_conv1']
-# Weights in the weighted average of the loss components
-    total_variation_weight = 1e-4
-    style_weight = 1.
-    content_weight = 0.025
-
-    # Define the loss by adding all components to a `loss` variable
-    loss = K.variable(0.)
-    layer_features = outputs_dict[content_layer]
-    target_image_features = layer_features[0, :, :, :]
-    combination_features = layer_features[2, :, :, :]
-    loss += content_weight * content_loss(target_image_features,
-                                      combination_features)
-    for layer_name in style_layers:
-        layer_features = outputs_dict[layer_name]
-        style_reference_features = layer_features[1, :, :, :]
-        combination_features = layer_features[2, :, :, :]
-        sl = style_loss(style_reference_features, combination_features)
-        loss += (style_weight / len(style_layers)) * sl
-    loss += total_variation_weight * total_variation_loss(combination_image)
-    
-    
-    
-    result_prefix = 'style_transfer_result'
-    iterations = 20
-    
-    # Run scipy-based optimization (L-BFGS) over the pixels of the generated image
-    # so as to minimize the neural style loss.
-    # This is our initial state: the target image.
-    # Note that `scipy.optimize.fmin_l_bfgs_b` can only process flat vectors.
-    x = preprocess_image(target_image_path)
-    x = x.flatten()
-    
-    
-    # Get the gradients of the generated image wrt the loss
-    grads = K.gradients(loss, combination_image)[0]
-    
-    # Function to fetch the values of the current loss and the current gradients
-    fetch_loss_and_grads = K.function([combination_image], [loss, grads])
-    
-    
-    
-    
-    return render_template('process.html', name=first_name,phrase=phrase)
+    output_dict = get_sentiment_geometry_from_text(phrase)
+    print(output_dict)
+    return render_template('process.html', name=first_name,phrase=phrase, result=output_dict)
     
     
     
@@ -155,8 +87,65 @@ def total_variation_loss(x):
         x[:, :img_height - 1, :img_width - 1, :] - x[:, :img_height - 1, 1:, :])
     return K.sum(K.pow(a + b, 1.25))
 
-	
+def get_text_sentiment(input_text):
 
+    sentiment_analyzer = SentimentIntensityAnalyzer()
+
+    sentiment_score = sentiment_analyzer.polarity_scores(input_text)
+
+    return sentiment_score	
+
+def parse_file_to_dict(file_path):
+    mapping_df = pd.read_excel(file_path, sheet_name='map')
+
+    mapping_df['Keywords'] = mapping_df['Keywords'].apply(lambda x: x.split(','))
+    mapping_df['Keywords'] = mapping_df['Keywords'].apply(lambda x: [keyword.strip() for keyword in x])
+
+    mapping_df['Category'] = mapping_df['Category'].str.strip()
+    mapping_df['Style'] = mapping_df['Style'].str.strip()
+
+    mapping_df.set_index('Category', inplace=True)
+
+    category_dict = mapping_df.to_dict(orient='index')
+
+    return category_dict
+
+
+def get_text_category(input_text, category_dict):
+
+    for category in category_dict.keys():
+
+        category_list = category_dict[category]['Keywords']
+
+        for keyword in category_list:
+
+            if keyword in input_text:
+
+                output_dict = {'Category': category}
+
+                output_dict.update({'Style': category_dict[category]['Style']})
+
+                return output_dict
+
+    return None
+
+
+def get_sentiment_geometry_from_text(input_text):
+
+    file_path = './data/category_mapping.xlsx'
+
+    category_dict = parse_file_to_dict(file_path)
+
+    text_sentiment_dict = {'Sentiment': get_text_sentiment(input_text)}
+
+    text_geometry_dict = get_text_category(input_text, category_dict)
+
+    output_dict = text_sentiment_dict
+
+    if text_geometry_dict is not None:
+        output_dict.update(text_geometry_dict)
+
+    return output_dict
 
 
 # Run the application
