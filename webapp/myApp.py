@@ -22,6 +22,10 @@ app.config['SECRET_KEY'] = 'our very hard to guess secretfir'
 def index():
     return render_template('index.html')
 
+@app.route('/test')
+def test():
+    return render_template('thank-you.html')	
+	
 @app.route('/process',methods=['GET', 'POST'])
 def process():
     global img_height

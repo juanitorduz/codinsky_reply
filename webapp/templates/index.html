@@ -3,22 +3,33 @@
 <head>
 <STYLE>
 div {
-  font-family: Helvetica,Trebuchet MS,Arial,sans-serif; 
+  font-family: Avenir,Trebuchet MS,Arial,sans-serif; 
   font-size:14pt;
-  font-weight:bold;
   color:#3B1B1B;
 }
 
-input,textarea {
-  font-family: Helvetica,Trebuchet MS,Arial,sans-serif; 
+input {
+  font-family: Avenir,Trebuchet MS,Arial,sans-serif; 
   font-size:14pt;
- 
-  color:#1B6B1B;
+  color:#3B1B1B;
+  border:1px solid;
+  border-color:#1F3373;
+  border-radius: 5px;
 }
+textarea {
+  font-family: Avenir,Trebuchet MS,Arial,sans-serif; 
+  font-size:14pt;
+  color:#3B1B1B;
+  border:1px solid;
+  border-color:#1F3373;
+  border-radius: 6px;
+}
+
+
 
 form input[type=submit] {
     cursor: pointer; 
-	background : url("/static/icon4.png") no-repeat center center;
+	background : url("/static/icon9.png") no-repeat center center;
 	width : 88px;
 	height :88px;
 	border : none;
@@ -37,36 +48,41 @@ form input[type=submit] {
 		<center>  <!--  /static/uploads/3b0581d9-0575-4a7a-b8b1-589dad9f33ae/91880.jpg  -->
 		<img src="/static/kand.jpg"  style="width:100%">
 		</center>
-		<table width="80%" style="position:relative;top:-250px;left:-20px">
+		<table width="46%" style="position:relative;top:-265px;left:-130px">
 		<tr>
 		<td colspan="2">
-			<div>Hello! I am Codinsky , Who are you? </div>
+			<div>Hello! I am Codinsky, Who are you? </div>
 		</td>
 		</tr>
 		<tr>
 		<td  colspan="2">
-			<div style="margin-top:5px">
-			<input type="text" name="firstname" size="50"></input>
+			<div style="margin-top:10px">
+			<input type="text" name="firstname" size="32"></input>
 			</div>
 		</td>
 		</tr>
 		<tr>
 		<td  colspan="2">
-			<div style="margin-top:20px">Please to meet you… : Can you please tell me now how do you feel? </div>
+			<div style="margin-top:16px">Please to meet you… </div>
+			<div style="margin-top:4px">Can you please tell me now how do you feel? </div>
 		</td>	
 		</tr>
 		<tr>
 		<td>
-		<textarea rows="4" cols="100" name="textarea"></textarea>	
+		<div style="margin-top:10px">
+		<textarea rows="4" cols="61" name="textarea"></textarea>	
+		</div>
 		</td>
-		<td><input type="submit" onmouseover=">
+		<td><input type="submit">
 		</td>
 		</tr>
 		</table>
+		<div style="position:relative;top:-1080px;left:1px;">
+		<img src="/static/logo.png"  style="width:16%">
+		</div>
+		</form>
 
-
-
-    </form>
+	
 <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/uploadr.js') }}"></script>
 </body>
