@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 import random
-import math
 
 
 def get_rand(max_value, min_value=0):
