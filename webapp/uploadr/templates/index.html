@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kodinsky museum</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+<center>  <!--  /static/uploads/3b0581d9-0575-4a7a-b8b1-589dad9f33ae/91880.jpg  -->
+<img src="/static/header.png">
+<center>
+<!--
+    <strong>KODINSKY:</strong><br>
+    <input type="checkbox" name="checkbox" value="on" checked>Are you happy?<p>
+-->
+    <strong>CODINSKY ASK : What do you think now? </strong><br>
+    <textarea rows="4" cols="120" name="textarea"></textarea><p>
+<!--
+    <strong>Files:</strong><br>
+    Select files OR drag them into the box below.
+    <input id="file-picker" type="file" name="file" accept="image/*" multiple><p>
+
+    <div id="dropbox">
+        Drag and Drop Files Here
+    </div><p>
+
+    <fieldset id="progress" style="display: none">
+        <legend>Files Progress</legend>
+
+        <div class="progress-trough">
+            <div id="progress-bar" class="progress-bar">0%</div>
+        </div>
+    </fieldset><p>
+-->
+    <input type="submit" value="GENERATE ART" id="upload-button">
+</form>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/uploadr.js') }}"></script>
+
+</body>
+</html>
