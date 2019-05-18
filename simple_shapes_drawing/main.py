@@ -1,83 +1,7 @@
 import numpy as np
 import cv2
 import random
-
-# https://realpython.com/python-opencv-color-spaces/
-# https://www.tutorialspoint.com/draw-geometric-shapes-on-images-using-python-opencv-module
-
-# images are normalized between 0 (black) - 255 (white)
-MAX_VALUE = 255
-MAX_THICKNESS = 30
-
-# circle params
-n_rects = 3
-n_circles = 3
-n_lines_parallel = 3
-n_lines_bezier = 0
-n_lines_vertex = 1
-
-dict_shapes = {
-    "rects": n_rects,
-    "circles": n_circles,
-    "lines_parallel": n_lines_parallel,
-    "lines_bezier": n_lines_bezier,
-    "lines_vertex": n_lines_vertex
-}
-
-WIDTH = 896
-HEIGHT = 504
-
-WIDTH_BORDER = 800
-HEIGHT_BORDER = 450
-OFFSET = 100
-# HEIGHT and WIDTH are inverted
-img_size = (HEIGHT, WIDTH, 4)
-
-
-def convert_rgb_bgr(color):
-    if len(color) == 4:
-        return (color[2], color[1], color[0], color[3])
-    elif len(color) == 3:
-        return (color[2], color[1], color[0])
-    else:
-        return -1
-
-
-# COLORS
-alpha_saturn_red = 1
-alpha_cinnabar = 1
-alpha_blue = 1
-alpha_green = 0.1
-alpha_yellow = 1
-alpha_background = 1
-alpha = 0.5
-saturn_red = convert_rgb_bgr((195, 130, 87, alpha_saturn_red))
-cinnabar = convert_rgb_bgr((227, 66, 52, alpha_cinnabar))
-blue = convert_rgb_bgr((86, 130, 162, alpha_blue))
-green = convert_rgb_bgr((168, 177, 128, alpha_green))
-yellow = convert_rgb_bgr((234, 193, 55, alpha_yellow))
-background_color = convert_rgb_bgr((236, 229, 190, alpha_background))
-
-colors_ = [saturn_red, cinnabar, blue, green, yellow]
-# colors = [green, yellow]
-
-
-Happy = convert_rgb_bgr((227, 66, 52, 89))
-Sad = convert_rgb_bgr((72, 35, 80, 31))
-Neutral = convert_rgb_bgr((138, 115, 159, 62))
-Chic = convert_rgb_bgr((52, 0, 21, 20))
-Lonely = convert_rgb_bgr((128, 182, 211, 83))
-Honesty = convert_rgb_bgr((227, 66, 52, 89))
-Anxiety = convert_rgb_bgr((86, 130, 162, 64))
-Exhausted = convert_rgb_bgr((27, 54, 138, 54))
-Odd = convert_rgb_bgr((236, 154, 55, 93))
-Valuable = convert_rgb_bgr((234, 193, 55, 92))
-Exciting = convert_rgb_bgr((168, 177, 128, 69))
-Pleasant = convert_rgb_bgr((183, 189, 214, 84))
-
-colors_ = [Happy, Sad, Neutral, Chic, Lonely, Honesty, Anxiety, Exhausted, Odd, Valuable, Exciting, Pleasant]
-happy_colors = [Happy, Honesty, Valuable, Exciting, Pleasant]
-sad_colors = [Sad, Neutral, Anxiety, Exhausted, Odd]
+import math
 
 
 def get_rand(max_value, min_value=0):
@@ -86,17 +10,78 @@ def get_rand(max_value, min_value=0):
     return r
 
 
-def main(dict_shapes, colors, size):
+# https://realpython.com/python-opencv-color-spaces/
+# https://www.tutorialspoint.com/draw-geometric-shapes-on-images-using-python-opencv-module
+
+def main():
+    # images are normalized between 0 (black) - 255 (white)
+    MAX_VALUE = 255
+    MAX_THICKNESS = 30
+
+    WIDTH = 896
+    HEIGHT = 504
+
+    WIDTH_BORDER = 800
+    HEIGHT_BORDER = 450
+    OFFSET = 100
+    # HEIGHT and WIDTH are inverted
+    size = (HEIGHT, WIDTH, 4)
+
+    def convert_rgb_bgr(color):
+        if len(color) == 4:
+            return (color[2], color[1], color[0], color[3])
+        elif len(color) == 3:
+            return (color[2], color[1], color[0])
+        else:
+            return -1
+
+    input_dict = {'Sentiment': {'neg': 0.508, 'neu': 0.492, 'pos': 0.0, 'compound': -0.4767},
+                  'Category': 'happy',
+                  'Style': 'circle, vertex',
+                  'Color': [227, 66, 52, 89]}
+
+    # determine background
+    compund = input_dict["Sentiment"]["compound"]
+    if compund >= 0:
+        background_color = convert_rgb_bgr((27, 54, 138, 54))
+    else:
+        background_color = convert_rgb_bgr((52, 0, 21, 20))
+
+    val_rect = 10
+    val_circle = 10
+    val_lines = 10
+    # circle params
+    n_rects = int(val_rect * abs(compund))
+    n_circles = int(val_circle * abs(compund))
+    n_lines_parallel = int(val_lines * abs(compund))
+    n_lines_bezier = 0
+    n_lines_vertex = 0
+    n_triangles = int(val_lines * abs(compund))
+
+    dict_shapes = {
+        "rects": n_rects,
+        "circles": n_circles,
+        "lines_parallel": n_lines_parallel,
+        "lines_bezier": n_lines_bezier,
+        "lines_vertex": n_lines_vertex,
+        "triangles": n_triangles
+    }
+
+    colors = input_dict["Color"]
+
     # create the image matrix
     my_img = np.full(size, background_color, dtype="uint8")
-    my_img = np.full(size, Exhausted, dtype="uint8")
 
     # iteration through all the dict to create shapes
     for k, v in dict_shapes.items():
         for i in range(v):
 
             # take a random color from the one given and random thickness
-            current_color = colors[get_rand(len(colors))]
+            if len(colors) > 1:
+                random_color_index = get_rand(len(colors))
+                current_color = colors[random_color_index]
+            else:
+                current_color = colors
             # thickness = get_rand(min(sizes[0], sizes[1]) / 4)
             # thickness = get_rand(MAX_THICKNESS)
             thickness = 2
@@ -109,7 +94,8 @@ def main(dict_shapes, colors, size):
                 vert_1 = (get_rand(WIDTH_BORDER - OFFSET, OFFSET), get_rand(HEIGHT_BORDER - OFFSET))
                 vert_2 = (get_rand(WIDTH_BORDER - OFFSET, OFFSET), get_rand(HEIGHT_BORDER - OFFSET))
                 cv2.rectangle(my_img, vert_1, vert_2, current_color, thickness)
-
+                # remove
+                # colors.remove(current_color)
             elif k == "circles":
 
                 center = (get_rand(WIDTH_BORDER - OFFSET, OFFSET), get_rand(HEIGHT_BORDER - OFFSET, OFFSET))
@@ -118,6 +104,8 @@ def main(dict_shapes, colors, size):
                 thickness = radius
                 cv2.circle(my_img, center, radius, current_color, thickness)
                 cv2.circle(my_img, center, int(radius * 0.01), background_color, thickness)
+                # remove
+                # colors.remove(current_color)
 
             elif k == "lines_parallel":
                 lineThickness = 2
@@ -139,6 +127,31 @@ def main(dict_shapes, colors, size):
                          current_color, lineThickness)
                 cv2.line(my_img, (x_pos_1, y_pos_1 + parallel_offset * 3), (x_pos_2, y_pos_2 + parallel_offset * 3),
                          current_color, lineThickness)
+
+                print("first points {},{}".format((x_pos_1, y_pos_1), (x_pos_2, y_pos_2)))
+                print("second points {},{}".format((x_pos_1, y_pos_1 + parallel_offset),
+                                                   (x_pos_2, y_pos_2 + parallel_offset)))
+                print("third points {},{}".format((x_pos_1, y_pos_1 + parallel_offset * 2),
+                                                  (x_pos_2, y_pos_2 + parallel_offset * 2)))
+                print("fourth points {},{}".format((x_pos_1, y_pos_1 + parallel_offset * 3),
+                                                   (x_pos_2, y_pos_2 + parallel_offset * 3)))
+
+                print("NEW")
+                m = (y_pos_1 - y_pos_2) / (x_pos_1 - x_pos_2)
+                new_m = - ((x_pos_1 - x_pos_2) / (y_pos_1 - y_pos_2))
+                b = int(y_pos_1 - m * x_pos_1)
+                print(b)
+                new_y_1 = int((new_m * x_pos_1) + (b + m * x_pos_1))
+                new_y_2 = int((new_m * x_pos_2) + (b + m * x_pos_2))
+
+                cv2.line(my_img, (x_pos_1 + 4, new_y_1), (x_pos_2 + 4, new_y_2), current_color, lineThickness)
+                cv2.line(my_img, (x_pos_1 + 8, new_y_1), (x_pos_2 + 8, new_y_2), current_color, lineThickness)
+                cv2.line(my_img, (x_pos_1 + 16, new_y_1), (x_pos_2 + 16, new_y_2), current_color, lineThickness)
+
+                print("first points {},{}".format((x_pos_1 + 4, new_y_1), (x_pos_2 + 4, new_y_2)))
+                print("second points {},{}".format((x_pos_1 + 8, new_y_1), (x_pos_2 + 8, new_y_2)))
+                print("third points {},{}".format((x_pos_1 + 16, new_y_1), (x_pos_2 + 16, new_y_2)))
+
 
             elif k == "lines_vertex":
                 lineThickness = 2
@@ -163,6 +176,11 @@ def main(dict_shapes, colors, size):
                     cv2.line(my_img, (x_pos_1, y_pos_1), (x_pos_2, y_pos_2),
                              current_color, lineThickness)
 
+            elif k == "triangles":
+                triangle = np.array([[100, 300], [400, 800], [100, 900]], np.int32)
+                cv2.fillConvexPoly(my_img, triangle, current_color)
+                # remove
+                # colors.remove(current_color)
 
             elif k == "lines_bezier":
                 pass
@@ -172,6 +190,4 @@ def main(dict_shapes, colors, size):
     cv2.destroyAllWindows()
 
 
-if __name__ == "__main__":
-    # convert into bgr
-    main(dict_shapes, colors_, img_size)
+main()
