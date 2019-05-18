@@ -16,6 +16,9 @@ def parse_file_to_dict(file_path):
     mapping_df['Keywords'] = mapping_df['Keywords'].apply(lambda x: x.split(','))
     mapping_df['Keywords'] = mapping_df['Keywords'].apply(lambda x: [keyword.strip() for keyword in x])
 
+    mapping_df['Color'] = mapping_df['Color'].apply(lambda x: x.split(','))
+    mapping_df['Color'] = mapping_df['Color'].apply(lambda x: [color.strip() for color in x])
+
     mapping_df['Category'] = mapping_df['Category'].str.strip()
     mapping_df['Style'] = mapping_df['Style'].str.strip()
 
@@ -38,7 +41,8 @@ def get_text_category(input_text, category_dict):
 
                 output_dict = {'Category': category}
 
-                output_dict.update({'Style': category_dict[category]['Style']})
+                output_dict.update({'Style': category_dict[category]['Style'],
+                                    'Color': category_dict[category]['Color']})
 
                 return output_dict
 
