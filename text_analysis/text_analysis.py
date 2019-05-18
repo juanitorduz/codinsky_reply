@@ -1,7 +1,6 @@
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-
 def get_text_sentiment(input_text):
 
     sentiment_analyzer = SentimentIntensityAnalyzer()
@@ -48,7 +47,7 @@ def get_text_category(input_text, category_dict):
 
 def get_sentiment_geometry_from_text(input_text):
 
-    file_path = '/Users/juanorduz/Documents/codinsky_reply/data/category_mapping.xlsx'
+    file_path = './data/category_mapping.xlsx'
 
     category_dict = parse_file_to_dict(file_path)
 
