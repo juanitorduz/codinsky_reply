@@ -14,6 +14,8 @@ import cv2
 import random
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from datetime import datetime
+
 
 sentiment_analyzer = SentimentIntensityAnalyzer()
 app = Flask(__name__)
@@ -42,7 +44,7 @@ def process():
     # This is the path to the style image.
     style_reference_image_path = 'images/kandisky_1.jpg'
     width, height = load_img(target_image_path).size
-    img_height = 200
+    img_height = 300
     img_width = int(width * img_height / height)	
 
     target_image = K.constant(preprocess_image(target_image_path))
@@ -167,8 +169,14 @@ def process():
     #plt.show()	
     img_height2=img_height +20;
     img_width2=img_width +30;
+	# current date and time
+    now = datetime.now()
+    timestamp = datetime.timestamp(now)
+    print("timestamp =", timestamp)
+    K.clear_session()
+	
     return render_template('process.html', name=first_name,phrase=phrase, result=output_dict, imgKand_width=img_width,imgKand_ht=img_height,
-	imgKand_width2=img_width2,imgKand_ht2=img_height2)
+	imgKand_width2=img_width2,imgKand_ht2=img_height2,timestamp=timestamp)
     
     
     
@@ -305,23 +313,43 @@ def generate_image_from_text_dict(input_dict):
             return (color[2], color[1], color[0])
         else:
             return -1
+			
+			
+    Happy = convert_rgb_bgr((227, 66, 52, 89))
+    Sad = convert_rgb_bgr((72, 35, 80, 31))
+    Neutral = convert_rgb_bgr((138, 115, 159, 62))
+    Chic = convert_rgb_bgr((52, 0, 21, 20))
+    Lonely = convert_rgb_bgr((128, 182, 211, 83))
+    Honesty = convert_rgb_bgr((227, 66, 52, 89))
+    Anxiety = convert_rgb_bgr((86, 130, 162, 64))
+    Exhausted = convert_rgb_bgr((236, 229, 190, 93))
+    Odd = convert_rgb_bgr((236, 154, 55, 93))
+    Valuable = convert_rgb_bgr((234, 193, 55, 92))
+    Exciting = convert_rgb_bgr((168, 177, 128, 69))
+    Pleasant = convert_rgb_bgr((183, 189, 214, 84))
+	
+	
+	
     # determine background
     compund = input_dict["Sentiment"]["compound"]
     if compund >= 0:
         background_color = convert_rgb_bgr((27, 54, 138, 54))
+        colors = [Happy,Chic,Honesty,Valuable,Exciting,Pleasant]
     else:
         background_color = convert_rgb_bgr((52, 0, 21, 20))
-
-    val_rect = 10
+        colors = [Sad,Neutral,Lonely,Anxiety,Exhausted,Odd]
+		
+    val_rect = 8
     val_circle = 10
-    val_lines = 10
+    val_lines = 8
+    val_tr = 3
     # circle params
-    n_rects = int(val_rect * abs(compund))
-    n_circles = int(val_circle * abs(compund))
-    n_lines_parallel = int(val_lines * abs(compund))
+    n_rects = int(val_rect * abs(compund))+1
+    n_circles = int(val_circle * abs(compund))+1
+    n_lines_parallel = int(val_lines * abs(compund))+1
     n_lines_bezier = 0
     n_lines_vertex = 0
-    n_triangles = int(val_lines * abs(compund))
+    n_triangles = int(val_tr * abs(compund))+1
 
     dict_shapes = {
         "rects": n_rects,
@@ -331,8 +359,11 @@ def generate_image_from_text_dict(input_dict):
         "lines_vertex": n_lines_vertex,
         "triangles": n_triangles
     }
-
-    colors = input_dict["Color"]
+	
+	
+	
+	
+	
 
     # create the image matrix
     my_img = np.full(size, background_color, dtype="uint8")
@@ -442,10 +473,13 @@ def generate_image_from_text_dict(input_dict):
                              current_color, lineThickness)
 
             elif k == "triangles":
-                triangle = np.array([[100, 300], [400, 800], [100, 900]], np.int32)
+                rand_offset_x = get_rand(500)
+                rand_offset_y = get_rand(50)
+                # triangle = np.array([[50, 150], [200, 400], [50, 450]], np.int32)
+                triangle = np.array(
+                [[50 + rand_offset_x, 150 + rand_offset_y], [200 + rand_offset_x, 400 + rand_offset_y],
+                [50 + rand_offset_x, 450 + rand_offset_y]], np.int32)
                 cv2.fillConvexPoly(my_img, triangle, current_color)
-                # remove
-                # colors.remove(current_color)
 
             elif k == "lines_bezier":
                 pass

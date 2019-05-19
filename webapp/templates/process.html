@@ -3,15 +3,15 @@
 {% block title %}Thanks{% endblock %}
 
 {% block content %}
-    <h1>Thanks for signing up!</h1>
+    <h1>{{ name }}, here's your picture</h1>
 	
-
-	{{ name }}
-	<br/>
-	{{ phrase }}
+	<div>
 	<img src="static/frame2.png" width="{{ imgKand_width2 }}px"  height="{{ imgKand_ht2 }}px">
-	<img src="static/style_transfer_result_at_iteration_0.png"  width="{{ imgKand_width }}px" height="{{ imgKand_ht }}px" style="top:-10px;left:-{{ imgKand_width }}px">
-	
+	</div>
+
+	<div style="position:relative;top:-315px;left:15px">
+	<img src="static/style_transfer_result_at_iteration_0.png?id={{ timestamp }}"  width="{{ imgKand_width }}px" height="{{ imgKand_ht }}px" style="top:-10px;left:-{{ imgKand_width }}px">
+	</div>
 	
 	{{ result }}
 {% endblock %}
